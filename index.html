@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>File Analysis</title>
+</head>
+
+<body>
+    <input type="file" id="fileInput" placeholder="Виберіть файл">
+    <button onclick="analyzeFile()">ПРОАНАЛІЗУВАТИ</button>
+    <div id="results"></div>
+
+    <script>
+        function analyzeFile() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function (e) {
+                const content = e.target.result;
+                const numbers = content.trim().split(/\s+/).map(Number);
+                console.log(numbers);
+
+                function findMax(numbers) {
+                    let max = Number.MIN_VALUE;
+                    numbers.forEach(num => {
+                        if (num > max) { max = num }
+                    });
+                    console.log(max);
+                    return max;
+                }
+
+                function findMin(numbers) {
+                    let min = Number.MAX_VALUE;
+                    numbers.forEach(num => {
+                        if (num < min) { min = num }
+                    });
+                    console.log(min);
+                    return min;
+                }
+
+                function findMedian(numbers) {
+                    const sorted = numbers.slice().sort((a, b) => a - b);
+                    const middle = Math.floor(sorted.length / 2);
+                    const median = sorted.length % 2 === 0 ? (sorted[middle - 1] + sorted[middle]) / 2 : sorted[middle];
+                    return median;
+                }
+
+                function findMean(numbers) {
+                    const sum = numbers.reduce((sum, num) => sum + num, 0);
+                    const mean = sum / numbers.length;
+                    return mean;
+                }
+
+                function findLongestIncreasingSubsequence(numbers) {
+                    let maxLength = 1;
+                    let currentLength = 1;
+                    let endIndex = 0;
+
+                    for (let i = 1; i < numbers.length; i++) {
+                        if (numbers[i] > numbers[i - 1]) {
+                            currentLength++;
+                        } else {
+                            if (currentLength > maxLength) {
+                                maxLength = currentLength;
+                                endIndex = i - 1;
+                            }
+                            currentLength = 1;
+                        }
+                    }
+
+                    if (currentLength > maxLength) {
+                        maxLength = currentLength;
+                        endIndex = numbers.length - 1;
+                    }
+
+                    return numbers.slice(endIndex - maxLength + 1, endIndex + 1);
+                }
+
+                function findLongestDecreasingSubsequence(numbers) {
+                    let maxLength = 1;
+                    let currentLength = 1;
+                    let endIndex = 0;
+
+                    for (let i = 1; i < numbers.length; i++) {
+                        if (numbers[i] < numbers[i - 1]) {
+                            currentLength++;
+                        } else {
+                            if (currentLength > maxLength) {
+                                maxLength = currentLength;
+                                endIndex = i - 1;
+                            }
+                            currentLength = 1;
+                        }
+                    }
+
+                    if (currentLength > maxLength) {
+                        maxLength = currentLength;
+                        endIndex = numbers.length - 1;
+                    }
+
+                    return numbers.slice(endIndex - maxLength + 1, endIndex + 1);
+                }
+
+
+                const results = document.getElementById('results');
+                results.innerHTML = `
+                    <p>Максимальне число: ${findMax(numbers)}</p>
+                    <p>Мінімальне число: ${findMin(numbers)}</p>
+                    <p>Медіана: ${findMedian(numbers)}</p>
+                    <p>Середнє арифметичне: ${findMean(numbers)}</p>
+                    <p>Найбільша зростаюча послідовність: ${findLongestIncreasingSubsequence(numbers).join(', ')}</p>
+                    <p>Найбільша спадна послідовність: ${findLongestDecreasingSubsequence(numbers).join(', ')}</p>
+                `;
+            };
+
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+
+</html>
